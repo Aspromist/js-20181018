@@ -3,6 +3,8 @@
 import PhoneCatalog from './phone-catalog.js';
 import PhoneViewer from './phone-viewer.js';
 import ShoppingCart from './shopping-cart.js';
+import SearchInput from './search-input.js';
+import SortingPopup from "./sorting-popup.js";
 
 import PhoneService from '../services/phone-service.js';
 
@@ -15,6 +17,8 @@ export default class PhonesPage {
     this._initCatalog();
     this._initViewer();
     this._initCart();
+    this._initSearchInput();
+    this._initSortingPopup();
 
     PhoneService.getPhones((phones) => {
       this._catalog.showPhones(phones);
@@ -31,31 +35,28 @@ export default class PhonesPage {
         this._catalog.hide();
         this._viewer.showPhone(phone);
       });
-    })
+    });
 
     this._catalog.on('add', event => {
       let phoneId = event.detail;
       this._cart.addItem(phoneId)
     })
-      // onPhoneSelected: (phoneId) => {
-      //   let phone = PhoneService.getPhone(phoneId);
-      //
-      //   this._catalog.hide();
-      //   this._viewer.showPhone(phone);
-      // },
-
   }
 
   _initViewer() {
     this._viewer = new PhoneViewer({
       element: this._element.querySelector('[data-component="phone-viewer"]'),
-    })
+    });
 
     this._viewer.on('back', () => {
       this._viewer.hide();
       this._catalog.show();
-    })
+    });
 
+    this._viewer.on('add', event => {
+      let phoneId = event.detail;
+      this._cart.addItem(phoneId)
+    });
   }
 
   _initCart() {
@@ -64,24 +65,34 @@ export default class PhonesPage {
     })
   }
 
+  _initSearchInput() {
+    this._searchInput = new SearchInput({
+      element: this._element.querySelector('[data-component="search-input"]')
+    });
+
+    this._searchInput.on('searchInputValueChange', (event) => {
+      this._catalog.renderByFilter(event.detail);
+    });
+  }
+
+  _initSortingPopup() {
+    this._sortingPopup = new SortingPopup({
+      element: this._element.querySelector('[data-component="sorting-popup"]')
+    });
+
+    this._sortingPopup.on('sortingPopupValueChange', (event) => {
+      this._catalog.renderBySorting(event.detail);
+    });
+  }
+
   _render() {
     this._element.innerHTML = `
        <div class="row">
         <!--Sidebar-->
         <div class="col-md-2">
             <section>
-                <p>
-                    Search:
-                    <input>
-                </p>
-
-                <p>
-                    Sort by:
-                    <select>
-                        <option value="name">Alphabetical</option>
-                        <option value="age">Newest</option>
-                    </select>
-                </p>
+                <div data-component="search-input"></div>
+                <div data-component="sorting-popup"></div>              
             </section>
 
             <section>

@@ -5,8 +5,6 @@ export default class ShoppingCart extends Component {
     super({ element });
 
     this._element = element;
-
-    // this._items = [];
     this._items = {};
 
     this._render();
@@ -40,12 +38,12 @@ export default class ShoppingCart extends Component {
 
   _render() {
     this._element.innerHTML = `
-        <p>Shopping Cart</p>
-        <ul>
-            ${Object.entries(this._items).map(([name, count]) => `
-             <li>${name} (${count}) <button data-item="${name}" data-element="button-remove">x</button></li>
-           `).join('')}
-        </ul>
+      <p>Shopping Cart</p>
+      <ul>
+        ${Object.entries(this._items).map(([name, count]) => `
+          <li>${name} (${count}) <button data-item="${name}" data-element="button-remove">x</button></li>
+        `).join('')}
+      </ul>
     `;
   }
 }
